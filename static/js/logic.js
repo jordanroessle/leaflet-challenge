@@ -93,9 +93,12 @@ function createMap(earthquakes) {
         "Outdoor Map": outdoormap
     };
 
+    var tectonicPlates = getPlates();
+
     // define overlay maps
     var overlayMaps = {
-        "Earthquakes": earthquakes
+        "Earthquakes": earthquakes,
+        "Tectonic Plates": tectonicPlates
     };
 
     var usaCenter = [37.09, -95.71];
@@ -111,3 +114,19 @@ function createMap(earthquakes) {
         collapsed: false
     }).addTo(myMap);
 }
+
+function getPlates() {
+    var filePath = "static/data/boundaries.json"
+    var tectonicPlates = 
+        d3.json(filePath).then(function(data, tectonicPlates) {
+            return L.geoJSON(data.features)
+    });
+    console.log(tectonicPlates)
+    return tectonicPlates;
+}
+
+
+
+
+
+
