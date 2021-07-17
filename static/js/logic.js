@@ -7,39 +7,50 @@ d3.json(earthquake_url).then(function(data) {
 });
 
 function createFeatures(earthquakeData) {
+    
     function onEachFeature(feature, layer) {
-        // initialize variables
-        var colorFill;
-        var depth = feature.geometry.coordinates[2];
-        var location = [feature.geometry.coordinates[1], feature.geometry.coordinates[0]];
+        // bind popup with information
+        layer.bindPopup("<h3>" + feature.properties.place + "</h3>")   
+    }
 
-        // determine color based on depth
+    function addCircles(feature, latlng) {
+        // initialize variables
+        var depthColor;
+        var depth = feature.geometry.coordinates[2]
+        
+        // determine color base on depth
         if(depth <= 10) {
-            colorFill = "yellowgreen";
+            depthColor = "yellowgreen";
         }
         else if(depth <= 30) {
-            colorFill = "yellow";
+            depthColor = "yellow";
         }
         else if(depth <= 50) {
-            colorFill = "gold";
+            depthColor = "gold";
         }
         else if(depth <= 70) {
-            colorFill = "orange";
+            depthColor = "orange";
         }
         else {
-            colorFill = "red";
+            depthColor = "red";
         }
-
-        L.circle(location, { 
-            fillColor: colorFill, 
-            radius: feature.properties.mag*10
-        })
-
-        layer.bindPopup("<h3>" + feature.properties.place + "</h3>")
+        
+        // style for circles
+        var markerOptions = {
+            radius: feature.properties.mag * 5, 
+            color: "black", 
+            fillColor: depthColor,
+            fillOpacity: 1,
+            weight: 1
+        }
+        
+        // return circle marker
+        return L.circleMarker(latlng, markerOptions)
     }
 
     var earthquakes = L.geoJSON(earthquakeData, {
         onEachFeature: onEachFeature,
+        pointToLayer: addCircles
     });
     
     createMap(earthquakes);
@@ -62,6 +73,12 @@ function createMap(earthquakes) {
         accessToken: API_KEY
     });
 
+    var lightmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+        maxZoom: 18,
+        id: "light-v10",
+        accessToken: API_KEY
+    });
+
     var outdoormap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
         maxZoom: 18,
         id: "outdoors-v11",
@@ -72,6 +89,7 @@ function createMap(earthquakes) {
     var baseMaps = { 
         "Satellite Map": satellitemap,
         "Dark Map": darkmap,  
+        "Light Map": lightmap,
         "Outdoor Map": outdoormap
     };
 
@@ -84,7 +102,7 @@ function createMap(earthquakes) {
     // create map, center on US
     var myMap = L.map("map", {
         center: usaCenter,
-        zoom: 5, 
+        zoom: 4, 
         layers: [satellitemap, earthquakes]
     });
 
