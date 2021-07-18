@@ -48,16 +48,24 @@ function createFeatures(earthquakeData) {
         return L.circleMarker(latlng, markerOptions)
     }
 
+    // define earthquakes for map
     var earthquakes = L.geoJSON(earthquakeData, {
         onEachFeature: onEachFeature,
         pointToLayer: addCircles
     });
     
-    createMap(earthquakes);
+    // define techtonic plates for map
+    var plateFile = "static/data/boundaries.json"
+    d3.json(plateFile).then(function(data) {
+            tectonicPlates = L.geoJSON(data.features, {
+                style: {color:"purple"}
+            })
+            // create the map
+            createMap(earthquakes, tectonicPlates);
+    });
 }
 
-function createMap(earthquakes) {
-
+function createMap(earthquakes, tectonicPlates) {
     // define layers
     var satellitemap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
         tileSize: 512,
@@ -93,8 +101,6 @@ function createMap(earthquakes) {
         "Outdoor Map": outdoormap
     };
 
-    var tectonicPlates = getPlates();
-
     // define overlay maps
     var overlayMaps = {
         "Earthquakes": earthquakes,
@@ -106,23 +112,34 @@ function createMap(earthquakes) {
     var myMap = L.map("map", {
         center: usaCenter,
         zoom: 4, 
-        layers: [satellitemap, earthquakes]
+        layers: [satellitemap, earthquakes, tectonicPlates]
     });
 
-    // Create layer control
+    // create layer control
     L.control.layers(baseMaps, overlayMaps, {
         collapsed: false
     }).addTo(myMap);
-}
 
-function getPlates() {
-    var filePath = "static/data/boundaries.json"
-    var tectonicPlates = 
-        d3.json(filePath).then(function(data, tectonicPlates) {
-            return L.geoJSON(data.features)
+    // add legend
+    var info = L.control({
+        position: "bottomright"
     });
-    console.log(tectonicPlates)
-    return tectonicPlates;
+
+    info.onAdd = function() {
+        var div = L.DomUtil.create("div", "legend");
+        return div;
+    }
+
+    info.addTo(myMap);
+
+    document.querySelector(".legend").innerHTML = [
+        "<div class='box yellowgreen'></div><div class='text'>-10-10</div>",
+        "<div class='box yellow'></div><div class='text'>10-30</div>",
+        "<div class='box gold'></div><div class='text'>30-50</div>",
+        "<div class='box orange'></div><div class='text'>50-70</div>",
+        "<div class='box orangered'></div><div class='text'>70-90</div>",
+        "<div class='box red'></div><div class='text'>90+</div>"
+      ].join("");
 }
 
 

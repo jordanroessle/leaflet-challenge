@@ -8,3 +8,51 @@ body,
 html {
   height: 100%;
 }
+
+.legend {
+  padding: 10px;
+  background-color: white;
+  width: 70px;
+  height: 120px;
+  border-radius: 10px;
+  margin: auto;
+}
+
+.box {
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  float: left;
+}
+
+.text {
+  margin-left: 30px;
+  height: 20px;
+}
+
+.yellowgreen {
+  color: yellowgreen;
+  background-color: yellowgreen;
+}
+.yellow {
+  color: yellow;
+  background-color: yellow;
+}
+.gold {
+  color: gold;
+  background-color: gold;
+}
+.orange {
+  color: orange;
+  background-color: orange;
+}
+
+.orangered {
+  color: orangered;
+  background-color: orangered;
+}
+.red {
+  color: red;
+  background-color: red;
+}
+
