@@ -31,6 +31,9 @@ function createFeatures(earthquakeData) {
         else if(depth <= 70) {
             depthColor = "orange";
         }
+        else if (depth <= 90) {
+            depthColor = "orangered";
+        }
         else {
             depthColor = "red";
         }
